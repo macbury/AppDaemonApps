@@ -1,0 +1,43 @@
+assistant:
+  module: butler_jenkins
+  class: ButlerJenkins
+  spotify_client_id: !secret spotify_client_id
+  spotify_client_secret: !secret spotify_client_secret
+  spotify_cache_path: '/home/homeassistant/.homeassistant/.spotify-token-cache'
+  spotify_callback_url: ''
+  spotify_entity_id: 'media_player.spotify'
+  spotify_source: '[AV] Samsung Soundbar K650'
+  soundbar_entity_id: 'media_player.soundbar'
+  darksky_api_key: !secret darksky_api_key
+  lat: !secret latitude
+  lng: !secret longitude
+
+living_room_heating:
+  module: adaptive_room_heating
+  class: AdaptiveRoomHeating
+  temperature_sensor: sensor.living_room_temperature
+  max_temperature: input_number.living_room_normal_temperature
+  min_temperature: input_number.living_room_savings_temperature
+  climate: climate.danfoss_z_thermostat_014g0013_heating_1
+  family_devices: 'group.family_devices'
+  scheduled:
+    - from: "5:00:00"
+      to: "23:00:00"
+
+bedroom_heating:
+  module: adaptive_room_heating
+  class: AdaptiveRoomHeating
+  temperature_sensor: sensor.bedroom_temperature
+  max_temperature: input_number.bedroom_normal_temperature
+  min_temperature: input_number.bedroom_savings_temperature
+  climate: climate.grzejnik_sypialnia_heating_1
+  family_devices: 'group.family_devices'
+  scheduled:
+    - from: "20:00:00"
+      to: "23:59:59"
+    - from: '00:00:00'
+      to: '9:00:00'
+
+spotify_lighting:
+  module: spotify_light
+  class: SpotifyLight
