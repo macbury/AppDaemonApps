@@ -1,3 +1,4 @@
+
 assistant:
   module: butler_jenkins
   class: ButlerJenkins
@@ -11,6 +12,16 @@ assistant:
   darksky_api_key: !secret darksky_api_key
   lat: !secret latitude
   lng: !secret longitude
+
+living_room_air:
+  module: air
+  class: AirPurifierController
+  family_devices: 'group.family_devices'
+  aqi_sensor: 'sensor.living_room_avg_aqi_mean'
+  fan_id: 'fan.living_room_air_purifier'
+  people_cleaning_time:
+    - from: '7:00:00'
+      to: "23:00:00"
 
 living_room_heating:
   module: adaptive_room_heating
