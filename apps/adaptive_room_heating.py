@@ -4,17 +4,28 @@ import datetime
 class AdaptiveRoomHeating(appapi.AppDaemon):
   def initialize(self):
     self.run_hourly(self.on_hour_callback, datetime.time(0, 0, 0))
+    self.listen_state(self.on_adaptation_callback, entity = self.args['comeback_input'])
+    self.listen_state(self.on_adaptation_callback, entity = self.args['outside_temperature'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['family_devices'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['max_temperature'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['min_temperature'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['temperature_sensor'])
-    self.heating_time()
+    self.adapt_temperature()
+
+  def outside_temperature(self):
+    return float(self.get_state(self.args['outside_temperature']))
 
   def current_temperature(self):
-    return float(self.get_state(self.args['temperature_sensor']))
+    try:
+      return float(self.get_state(self.args['temperature_sensor']))
+    except Exception as e:
+      return 20
 
   def anyone_in_home(self):
     return self.get_state(self.args['family_devices']) == 'home'
+
+  def comeback(self):
+    return self.get_state('input_boolean.comeback') == 'on'
 
   def heating_time(self):
     scheduled = self.args['scheduled']
@@ -48,15 +59,21 @@ class AdaptiveRoomHeating(appapi.AppDaemon):
     self.adapt_temperature()
 
   def adapt_temperature(self):
-    self.log("Adapting temperature, Current temp is: {}".format(self.current_temperature()))
-    if self.current_temperature() >= self.max_temperature():
+    self.log("Adapting temperature, Current temp is: {}, outside is: {}".format(self.current_temperature(), self.outside_temperature()))
+    if self.outside_temperature() > 18:
+      self.log("Outside temperature is {}, lowering temperature".format(self.outside_temperature()))
+      self.lower_temperature()
+    elif self.comeback():
+      self.log("Somebody is coming back!")
+      self.raise_temperature()
+    elif self.current_temperature() >= self.max_temperature():
       self.log("It is too hot")
       self.lower_temperature()
     elif self.current_temperature() <= self.min_temperature():
       self.log("Its cold here")
       self.raise_temperature()
     elif self.anyone_in_home() and self.heating_time():
-      self.log("Somebody is home, and still day is")
+      self.log("Somebody is home, and still heating time is")
       self.raise_temperature()
     else:
       self.log("Nobody home or night")

@@ -31,9 +31,25 @@ living_room_heating:
   min_temperature: input_number.living_room_savings_temperature
   climate: climate.danfoss_z_thermostat_014g0013_heating_1
   family_devices: 'group.family_devices'
+  outside_temperature: sensor.dark_sky_temperature
+  comeback_input: 'input_boolean.comeback'
   scheduled:
     - from: "5:00:00"
       to: "23:00:00"
+
+kitchen_heating:
+  module: kitchen_room_heating
+  class: KitchenRoomHeating
+  temperature_sensor: sensor.living_room_temperature
+  max_temperature: input_number.living_room_normal_temperature
+  min_temperature: input_number.living_room_savings_temperature
+  climate: climate.eurotronic_eur_stellaz_wall_radiator_thermostat_valve_control_furnace
+  family_devices: 'group.family_devices'
+  outside_temperature: sensor.dark_sky_temperature
+  comeback_input: 'input_boolean.comeback'
+  scheduled:
+    - from: "6:00:00"
+      to: "8:00:00"
 
 bedroom_heating:
   module: adaptive_room_heating
@@ -43,6 +59,8 @@ bedroom_heating:
   min_temperature: input_number.bedroom_savings_temperature
   climate: climate.grzejnik_sypialnia_heating_1
   family_devices: 'group.family_devices'
+  outside_temperature: sensor.dark_sky_temperature
+  comeback_input: 'input_boolean.comeback'
   scheduled:
     - from: "20:00:00"
       to: "23:59:59"
