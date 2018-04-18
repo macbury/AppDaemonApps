@@ -19,6 +19,7 @@ living_room_air:
   family_devices: 'group.family_devices'
   aqi_sensor: 'sensor.living_room_avg_aqi_mean'
   fan_id: 'fan.living_room_air_purifier'
+  balcone_door: 'binary_sensor.sensor_2'
   people_cleaning_time:
     - from: '7:00:00'
       to: "23:00:00"

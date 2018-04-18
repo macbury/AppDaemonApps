@@ -8,7 +8,11 @@ class AirPurifierController(appapi.AppDaemon):
     self.run_every(self.on_run_every, datetime.datetime.now(), 15 * 60)
     self.listen_state(self.on_adaptation_callback, entity = self.args['family_devices'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['aqi_sensor'])
+    self.listen_state(self.on_adaptation_callback, entity = self.args['balcone_door'])
     self.adapt_air_purifier_mode()
+
+  def balcone_door_opened(self):
+    return self.get_state(self.args['balcone_door']) == 'on'
 
   def on_run_every(self, kwargs=None):
     self.log("15 min callback")
@@ -82,7 +86,10 @@ class AirPurifierController(appapi.AppDaemon):
   def adapt_air_purifier_mode(self):
     self.log("Current mode is: {}".format(self.get_mode()))
     self.log("Current aqi is: {}".format(self.current_aqi()))
-    if self.anyone_in_home():
+    if self.balcone_door_opened():
+      self.log("Balcone door opened, turning off")
+      self.turn_off()
+    elif self.anyone_in_home():
       self.log("People home")
       if not self.manual_mode():
         self.turn_on()
