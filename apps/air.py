@@ -7,18 +7,12 @@ class AirPurifierController(appapi.AppDaemon):
     self.fan_id = self.args['fan_id']
     self.run_every(self.on_run_every, datetime.datetime.now(), 60)
     self.listen_state(self.on_adaptation_callback, entity = self.args['family_devices'])
-    for light in self.args['bedroom_lights']:
-      self.listen_state(self.on_adaptation_callback, entity = light)
+    #self.listen_state(self.on_adaptation_callback, entity = self.args['aqi_sensor'])
+    #self.listen_state(self.on_adaptation_callback, entity = self.args['balcone_door'])
     self.adapt_air_purifier_mode()
 
   def balcone_door_opened(self):
     return self.get_state(self.args['balcone_door']) == 'on'
-
-  def bedroom_lights_on(self):
-    for light in self.args['bedroom_lights']:
-      if self.get_state(light) == 'on':
-        return True
-    return False
 
   def on_run_every(self, kwargs=None):
     self.log("15 min callback")
@@ -35,8 +29,18 @@ class AirPurifierController(appapi.AppDaemon):
   def get_mode(self):
     return self.get_state(self.fan_id, 'mode')
 
-  def cleaning_time(self):
-    scheduled = self.args['cleaning_time']
+  def animal_cleaning_time(self):
+    scheduled = self.args['animal_cleaning_time']
+    for time_range in scheduled:
+      if self.now_is_between(time_range["from"], time_range["to"]):
+        self.log("In range: {} -> {}".format(time_range['from'], time_range['to']))
+        return True
+      else:
+        self.log("Not in range: {} -> {}".format(time_range['from'], time_range['to']))
+    return False
+
+  def people_cleaning_time(self):
+    scheduled = self.args['people_cleaning_time']
     for time_range in scheduled:
       if self.now_is_between(time_range["from"], time_range["to"]):
         self.log("In range: {} -> {}".format(time_range['from'], time_range['to']))
@@ -89,17 +93,14 @@ class AirPurifierController(appapi.AppDaemon):
       self.log("People home")
       if not self.manual_mode():
         self.turn_on()
-      elif self.cleaning_time():
+      elif self.people_cleaning_time():
         self.turn_on()
-        if self.bedroom_lights_on():
-          self.log("Auto mode, lights on")
-          self.switch_to_auto()
-        else:
-          self.log("Silent mode, lights off")
-          self.switch_to_silent()
+        self.log("Adapting speed")
+        self.switch_to_auto()
       else:
+        self.turn_on()
         self.log("Out of schedule, turning off")
-        self.turn_off()
+        self.switch_to_silent()
     else:
       self.log("Nobody home")
       self.log("Turn off completle")

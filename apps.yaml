@@ -20,14 +20,10 @@ living_room_air:
   aqi_sensor: 'sensor.living_room_avg_aqi_mean'
   fan_id: 'fan.living_room_air_purifier'
   balcone_door: 'binary_sensor.sensor_2'
-  bedroom_lights:
-    - light.bedroom_light_arek
-    - light.bedroom_light_ola
-  cleaning_time:
-    - from: '22:00:00'
-      to: "23:59:00"
-    - from: '0:00:00'
-      to: "9:00:00"
+  people_cleaning_time:
+    - from: '7:00:00'
+      to: "23:00:00"
+
 living_room_heating:
   module: adaptive_room_heating
   class: AdaptiveRoomHeating
@@ -75,3 +71,31 @@ bedroom_heating:
 spotify_lighting:
   module: spotify_light
   class: SpotifyLight
+
+thing_speak_temperature:
+  module: thingspeak
+  class: ThingSpeak
+  entity_id: 'sensor.balcone_temperature'
+  field: 'field2'
+  api_key: !secret thingspeak_api_key
+
+thing_speak_humidity:
+  module: thingspeak
+  class: ThingSpeak
+  entity_id: 'sensor.balcone_humidity'
+  field: 'field5'
+  api_key: !secret thingspeak_api_key
+
+thing_speak_pressure:
+  module: thingspeak
+  class: ThingSpeak
+  entity_id: 'sensor.balcone_pressure'
+  field: 'field4'
+  api_key: !secret thingspeak_api_key
+
+thing_speak_voltage:
+  module: thingspeak
+  class: ThingSpeak
+  entity_id: 'sensor.balcone_voltage'
+  field: 'field3'
+  api_key: !secret thingspeak_api_key
