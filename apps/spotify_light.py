@@ -31,9 +31,9 @@ class SpotifyLight(appapi.AppDaemon):
       self.log('Ambient Light turned off, so ignore...')
       return
 
-    if self.get_state('media_player.spotify', 'source') != SPOTIFY_SOURCE:
-      self.log("Spotify source is not soundbar!, ignoring change of lighting")
-      return
+    # if self.get_state('media_player.spotify', 'source') != SPOTIFY_SOURCE:
+    #   self.log("Spotify source is not soundbar!, ignoring change of lighting")
+    #   return
 
     self.log("Accent color is: {}".format(self.accent_color()))
     self.log("Dominant color is: {}".format(self.dominant_color()))

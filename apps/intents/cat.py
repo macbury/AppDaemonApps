@@ -7,10 +7,6 @@ class FeedTheCat(IntentHandler):
 
   def call(self, data):
     responses = [
-      "Giving food to the cat",
-      "Feeding the cat",
-      "Here you go",
-      "On the power of gray skull",
       "Here, kity kity kity"
     ]
 
