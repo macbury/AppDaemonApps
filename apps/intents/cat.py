@@ -3,7 +3,7 @@ import random
 
 class FeedTheCat(IntentHandler):
   def name(self):
-    return 'cat.feed'
+    return 'FeedTheCat'
 
   def call(self, data):
     responses = [

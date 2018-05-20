@@ -20,9 +20,12 @@ living_room_air:
   aqi_sensor: 'sensor.living_room_avg_aqi_mean'
   fan_id: 'fan.living_room_air_purifier'
   balcone_door: 'binary_sensor.sensor_2'
+  silent_cleaning_time:
+    - from: '00:00:00'
+      to: "8:30:00"
   people_cleaning_time:
-    - from: '7:00:00'
-      to: "23:00:00"
+    - from: '22:00:00'
+      to: "23:59:00"
 
 living_room_heating:
   module: adaptive_room_heating

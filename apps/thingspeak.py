@@ -24,7 +24,6 @@ class ThingSpeak(appapi.AppDaemon):
     self.publish()
 
   def publish(self):
-    time.sleep(random.randint(1, 15))
     self.log("Sending state for {} and field {} and value: {}".format(self.sensor(), self.field(), self.value()))
     endpoint = "https://api.thingspeak.com/update?api_key={}&{}={}".format(self.api_key(), self.field(), self.value())
     request = requests.get(endpoint)

@@ -29,8 +29,8 @@ class AirPurifierController(appapi.AppDaemon):
   def get_mode(self):
     return self.get_state(self.fan_id, 'mode')
 
-  def animal_cleaning_time(self):
-    scheduled = self.args['animal_cleaning_time']
+  def silent_cleaning_time(self):
+    scheduled = self.args['silent_cleaning_time']
     for time_range in scheduled:
       if self.now_is_between(time_range["from"], time_range["to"]):
         self.log("In range: {} -> {}".format(time_range['from'], time_range['to']))
@@ -97,10 +97,13 @@ class AirPurifierController(appapi.AppDaemon):
         self.turn_on()
         self.log("Adapting speed")
         self.switch_to_auto()
-      else:
+      elif self.silent_cleaning_time():
         self.turn_on()
-        self.log("Out of schedule, turning off")
+        self.log("Silent mode")
         self.switch_to_silent()
+      else:
+        self.log("Turning off...")
+        self.turn_off()
     else:
       self.log("Nobody home")
       self.log("Turn off completle")

@@ -2,11 +2,11 @@ from intent_handler import IntentHandler
 
 class ScriptRunIntent(IntentHandler):
   def name(self):
-    return 'script.run'
+    return 'ScriptRunIntent'
 
   def call(self, data):
     self.script = None
-    scriptName = self.app.get_apiai_slot_value(data, "Script")
+    scriptName = self.app.get_alexa_slot_value(data, "Script")
     if scriptName is None:
       return "Could not find script with name: {}".format(scriptName)
 
