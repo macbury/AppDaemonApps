@@ -1,7 +1,7 @@
-import appdaemon.appapi as appapi
+import appdaemon.plugins.hass.hassapi as hass
 import datetime
 
-class AirPurifierController(appapi.AppDaemon):
+class AirPurifierController(hass.Hass):
   def initialize(self):
     self.log("Started...")
     self.fan_id = self.args['fan_id']
@@ -27,7 +27,7 @@ class AirPurifierController(appapi.AppDaemon):
     return state == 'home'
 
   def get_mode(self):
-    return self.get_state(self.fan_id, 'mode')
+    return self.get_state(self.fan_id, attribute = 'mode')
 
   def silent_cleaning_time(self):
     scheduled = self.args['silent_cleaning_time']
@@ -91,9 +91,7 @@ class AirPurifierController(appapi.AppDaemon):
       self.turn_off()
     elif self.anyone_in_home():
       self.log("People home")
-      if not self.manual_mode():
-        self.turn_on()
-      elif self.people_cleaning_time():
+      if self.people_cleaning_time():
         self.turn_on()
         self.log("Adapting speed")
         self.switch_to_auto()

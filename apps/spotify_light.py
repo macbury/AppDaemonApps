@@ -1,11 +1,11 @@
-import appdaemon.appapi as appapi
+import appdaemon.plugins.hass.hassapi as hass
 import json
 SPOTIFY_SENSOR_ENTITY_ID = 'sensor.spotify_cover'
 MAIN_LIGHT_ENTITY = 'group.living_room_main_light'
 AMBIENT_LIGHT = 'group.living_room_ambient_light'
 SPOTIFY_SOURCE = '[AV] Samsung Soundbar K650'
 
-class SpotifyLight(appapi.AppDaemon):
+class SpotifyLight(hass.Hass):
 
   def initialize(self):
     self.listen_state(self.update_lighting_callback, entity = SPOTIFY_SENSOR_ENTITY_ID)
@@ -40,19 +40,19 @@ class SpotifyLight(appapi.AppDaemon):
 
     #self.set_light('group.living_room_main_ambient_light', self.dominant_color())
     #self.set_light('group.living_room_accent_ambient_light', self.accent_color())
-    self.publish_color('home/living_room/led_strip/desk/set', self.dominant_color())
-    self.publish_color('home/living_room/led_strip/lamp/set', self.accent_color())
-    self.publish_color('home/living_room/led_strip/tv/set', self.accent_color())
+    self.publish_color('home/living_room/led_strip/desk/set', self.dominant_color(), 173)
+    self.publish_color('home/living_room/led_strip/lamp/set', self.accent_color(), 254)
+    self.publish_color('home/living_room/led_strip/tv/set', self.accent_color(), 254)
 
   def dominant_color(self):
-    return self.get_state(SPOTIFY_SENSOR_ENTITY_ID, 'dominant_rgb') or [255, 255, 255]
+    return self.get_state(SPOTIFY_SENSOR_ENTITY_ID, attribute = 'dominant_rgb') or [255, 255, 255]
 
   def accent_color(self):
-    return self.get_state(SPOTIFY_SENSOR_ENTITY_ID, 'accent_rgb_1') or [255, 255, 255]
+    return self.get_state(SPOTIFY_SENSOR_ENTITY_ID, attribute =  'accent_rgb_1') or [255, 255, 255]
 
-  def publish_color(self, topic, color):
+  def publish_color(self, topic, color, brightness):
     self.log("Sending to {}".format(topic))
-    self.call_service('mqtt/publish', topic=topic, payload=json.dumps({ 'state': 'ON', 'brightness': 193 }), qos=2)
+    self.call_service('mqtt/publish', topic=topic, payload=json.dumps({ 'state': 'ON', 'brightness': brightness }), qos=2)
     self.call_service('mqtt/publish', topic=topic, payload=json.dumps({ 'state': 'ON', 'effect': 'SingleColor' }), qos=2)
     self.call_service('mqtt/publish', topic=topic, payload=json.dumps({ 'state': 'ON', 'color': { 'r': color[0], 'g': color[1], 'b': color[2] } }), qos=2)
 

@@ -1,8 +1,9 @@
-AppDaemon:
-  logfile: STDOUT
-  errorfile: STDERR
-  log_generations: 3
+secrets: /home/homeassistant/.homeassistant/secrets.yaml
+appdaemon:
   threads: 10
   api_port: 5000
-HASS:
-  ha_url: "http://localhost:8123"
+  plugins:
+    HASS:
+      type: hass
+      ha_url: http://127.0.0.1:8123
+      ha_key: !secret http_api_password

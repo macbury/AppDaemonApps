@@ -1,8 +1,8 @@
-import appdaemon.appapi as appapi
+import appdaemon.plugins.hass.hassapi as hass
 import requests
 import time
 import random
-class ThingSpeak(appapi.AppDaemon):
+class ThingSpeak(hass.Hass):
   def sensor(self):
     return self.args['entity_id']
 

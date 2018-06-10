@@ -1,7 +1,7 @@
-import appdaemon.appapi as appapi
+import appdaemon.plugins.hass.hassapi as hass
 import datetime
 
-class AdaptiveRoomHeating(appapi.AppDaemon):
+class AdaptiveRoomHeating(hass.Hass):
   def initialize(self):
     self.run_hourly(self.on_hour_callback, datetime.time(0, 0, 0))
     self.listen_state(self.on_adaptation_callback, entity = self.args['comeback_input'])
