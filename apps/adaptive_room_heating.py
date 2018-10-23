@@ -10,6 +10,7 @@ class AdaptiveRoomHeating(hass.Hass):
     self.listen_state(self.on_adaptation_callback, entity = self.args['max_temperature'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['min_temperature'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['temperature_sensor'])
+    self.listen_state(self.on_adaptation_callback, entity = self.args['calendar'])
     self.adapt_temperature()
 
   def outside_temperature(self):
@@ -28,14 +29,12 @@ class AdaptiveRoomHeating(hass.Hass):
     return self.get_state('input_boolean.comeback') == 'on'
 
   def heating_time(self):
-    scheduled = self.args['scheduled']
-    for time_range in scheduled:
-      if self.now_is_between(time_range["from"], time_range["to"]):
-        self.log("In range: {} -> {}".format(time_range['from'], time_range['to']))
-        return True
-      else:
-        self.log("Not in range: {} -> {}".format(time_range['from'], time_range['to']))
-    return False
+    if self.get_state(self.args['calendar']) == 'on':
+      self.log("Calendar: {} is On".format(self.args['calendar']))
+      return True
+    else:
+      self.log("Calendar: {} is Off".format(self.args['calendar']))
+      return False
 
   def max_temperature(self):
     return float(self.get_state(self.args['max_temperature']))
@@ -59,8 +58,9 @@ class AdaptiveRoomHeating(hass.Hass):
     self.adapt_temperature()
 
   def adapt_temperature(self):
+    self.heating_time()
     self.log("Adapting temperature, Current temp is: {}, outside is: {}".format(self.current_temperature(), self.outside_temperature()))
-    if self.outside_temperature() > 18:
+    if self.outside_temperature() > 20:
       self.log("Outside temperature is {}, lowering temperature".format(self.outside_temperature()))
       self.lower_temperature()
     elif self.comeback():

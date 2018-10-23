@@ -31,18 +31,18 @@ class SpotifyLight(hass.Hass):
       self.log('Ambient Light turned off, so ignore...')
       return
 
-    # if self.get_state('media_player.spotify', 'source') != SPOTIFY_SOURCE:
-    #   self.log("Spotify source is not soundbar!, ignoring change of lighting")
-    #   return
+    if self.get_state('media_player.spotify', attribute='source') != SPOTIFY_SOURCE:
+      self.log("Spotify source is not soundbar!, ignoring change of lighting")
+      return
 
     self.log("Accent color is: {}".format(self.accent_color()))
     self.log("Dominant color is: {}".format(self.dominant_color()))
 
-    #self.set_light('group.living_room_main_ambient_light', self.dominant_color())
+    self.set_light('light.living_room_sofa', self.dominant_color())
     #self.set_light('group.living_room_accent_ambient_light', self.accent_color())
     self.publish_color('home/living_room/led_strip/desk/set', self.dominant_color(), 173)
     self.publish_color('home/living_room/led_strip/lamp/set', self.accent_color(), 254)
-    self.publish_color('home/living_room/led_strip/tv/set', self.accent_color(), 254)
+    self.publish_color('home/living_room/led_strip/tv/set', self.dominant_color(), 254)
 
   def dominant_color(self):
     return self.get_state(SPOTIFY_SENSOR_ENTITY_ID, attribute = 'dominant_rgb') or [255, 255, 255]
@@ -58,4 +58,4 @@ class SpotifyLight(hass.Hass):
 
 
   def set_light(self, entity_id, color):
-    self.turn_on(entity_id, effect="SingleColor", brightness=193, rgb_color=color)
+    self.turn_on(entity_id, brightness=193, rgb_color=color)
