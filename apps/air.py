@@ -8,10 +8,17 @@ class AirPurifierController(hass.Hass):
     self.listen_state(self.on_adaptation_callback, entity = self.args['family_devices'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['balcone_door'])
     self.listen_state(self.on_adaptation_callback, entity = self.args['calendar'])
+    self.log("Watching entity: {}".format(self.args['alt_mode_entity']))
+    self.listen_state(self.on_adaptation_callback, entity = self.args['alt_mode_entity'], new = "on")
+    self.listen_state(self.on_adaptation_callback, entity = self.args['alt_mode_entity'], new = "off", old="on", immediate=True, duration=self.args['fallback'])
     self.adapt_air_purifier_mode()
+
+  def alt_mode_entity_working(self):
+    return self.get_state(self.args['alt_mode_entity']) == 'on'
 
   def balcone_door_opened(self):
     return self.get_state(self.args['balcone_door']) == 'on'
+
   def anyone_in_home(self):
     state = self.get_state(self.args['family_devices'])
     self.log("State is {} for {}".format(state, self.args['family_devices']))
@@ -35,8 +42,12 @@ class AirPurifierController(hass.Hass):
     self.call_service('fan/turn_off', entity_id=self.fan_id)
 
   def switch_to_mode(self):
-    self.log("Switching to {} mode".format(self.args['mode']))
-    self.call_service('fan/set_speed', entity_id=self.fan_id, speed=self.args['mode'])
+    if self.alt_mode_entity_working():
+      self.log("Switching to {} mode because {} is working".format(self.args['alt_mode'], self.args['alt_mode_entity']))
+      self.call_service('fan/set_speed', entity_id=self.fan_id, speed=self.args['alt_mode'])
+    else:
+      self.log("Switching to {} mode".format(self.args['mode']))
+      self.call_service('fan/set_speed', entity_id=self.fan_id, speed=self.args['mode'])
   def turn_on(self):
     self.log("Turning on air purifier")
     self.call_service('fan/turn_on', entity_id=self.fan_id)
